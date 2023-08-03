@@ -3,53 +3,41 @@ import './TodoForm.css';
 
 function TodoForm( { onTaskAdd }) {
 
-	// const [errors, setErrors] = useState([]);
 	const [fetchedTasks, setFetchedTasks] = useState([]);
 
 	useEffect(() => {
-		// Fetch tasks from the "tasks.json" file using the fetch API
-		fetch('../../public/data/tasks.json')
+		fetch('/data/tasks.json')
 		  .then(response => response.json())
 		  .then(data => setFetchedTasks(data.tasks))
 		  .catch(error => console.error('Error fetching tasks:', error));
 	}, []);
 
 
-	const handleSubmit = (event) => {
+	const handleGenerateRandomTask = (event) => {
 		event.preventDefault();
-		onTaskAdd(event.target.task.value.trim());
-		event.target.task.value = '';
+		if (fetchedTasks.length > 0) {
+      const randomIndex = Math.floor(Math.random() * fetchedTasks.length);
+			const randomTask = fetchedTasks[randomIndex];
+			onTaskAdd(randomTask);
+			const input = document.getElementById('input');
+			input.value = randomTask;
+		}
 	}
-
-	// const handleValidation = (event) => {
-	// 	const newErrors = [];
-	// 	const { name, value } = event.target;
-
-
-	// 	if (name === 'task' && value.trim() === '') {
-	// 		newErrors.push('Task cannot be empty');
-	// 	}
-	// 	setErrors(newErrors);
-	// }
 
 	return (
 		<>
-			<form onSubmit={ handleSubmit }>
+			<form>
 				<div className="form-group">
-				<div>
+					<input id="input" type="text" name="task" />
+					<button type='submit' onClick={handleGenerateRandomTask}>Generate&nbsp;Random&nbsp;Task</button>
+				</div>
+				<div className="tasks">
+					<div className="title">List of available tasks:</div>
 					{fetchedTasks.map((task, index) => (
-						<div key={index}>{task}</div>
+						<li key={index} className="list">{task}</li>
 					))}
 				</div>
-					{/* <input
-						type="text"
-						name="task"
-						placeholder="Type a new task here"
-						onChange={handleValidation}
-					/>
 
-					<button type='submit' disabled={errors.length > 0}>Add&nbsp;Task</button> */}
-				</div>
 				{/* { errors.length > 0 && errors.map((error, index) => <li key={ index } className="error">{ error }</li> ) } */}
 			</form>
 		</>
